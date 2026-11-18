@@ -1,0 +1,42 @@
+[
+  {
+    "task_id": "requests_7427",
+    "repo": "psf/requests",
+    "resolved": false,
+    "error": "Agent exceeded session timeout (5.0 min)",
+    "exit_code": -1,
+    "patch_chars": 0,
+    "tool_calls": 14,
+    "duration_seconds": 300.73
+  },
+  {
+    "task_id": "requests_7315",
+    "repo": "psf/requests",
+    "resolved": true,
+    "error": null,
+    "exit_code": 0,
+    "patch_chars": 1633,
+    "tool_calls": 19,
+    "duration_seconds": 105.42
+  },
+  {
+    "task_id": "rich_4077",
+    "repo": "Textualize/rich",
+    "resolved": false,
+    "error": null,
+    "exit_code": 1,
+    "patch_chars": 1347,
+    "tool_calls": 20,
+    "duration_seconds": 234.15
+  },
+  {
+    "task_id": "rich_4076",
+    "repo": "Textualize/rich",
+    "resolved": false,
+    "error": "Agent exceeded tool call budget (20 calls)",
+    "exit_code": -1,
+    "patch_chars": 0,
+    "tool_calls": 20,
+    "duration_seconds": 194.81
+  }
+]

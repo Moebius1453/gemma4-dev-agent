@@ -1,0 +1,38 @@
+diff --git a/rich/console.py b/rich/console.py
+index 0bdce769..7c19ce50 100644
+--- a/rich/console.py
++++ b/rich/console.py
+@@ -966,10 +966,14 @@ class Console:
+             return force_color != ""
+ 
+         # Any other value defaults to auto detect
+-        isatty: Optional[Callable[[], bool]] = getattr(self.file, "isatty", None)
++        isatty = getattr(self.file, "isatty", None)
++        if isatty is None:
++            return False
++        if not callable(isatty):
++            return isatty
+         try:
+-            return False if isatty is None else isatty()
+-        except ValueError:
++            return isatty()
++        except (ValueError, TypeError):
+             # in some situation (at the end of a pytest run for example) isatty() can raise
+             # ValueError: I/O operation on closed file
+             # return False because we aren't in a terminal anymore
+diff --git a/rich/progress.py b/rich/progress.py
+index c2de125a..34256364 100644
+--- a/rich/progress.py
++++ b/rich/progress.py
+@@ -223,7 +223,10 @@ class _Reader(RawIOBase, BinaryIO):
+         return self.handle.fileno()
+ 
+     def isatty(self) -> bool:
+-        return self.handle.isatty()
++        try:
++            return self.handle.isatty()
++        except (ValueError, TypeError):
++            return False
+ 
+     @property
+     def mode(self) -> str:

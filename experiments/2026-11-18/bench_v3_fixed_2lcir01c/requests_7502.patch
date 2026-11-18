@@ -1,0 +1,26 @@
+diff --git a/src/requests/models.py b/src/requests/models.py
+index c4cc028e..3804a559 100644
+--- a/src/requests/models.py
++++ b/src/requests/models.py
+@@ -236,10 +236,10 @@ class RequestEncodingMixin:
+ 
+             if isinstance(fp, (str, bytes, bytearray)):
+                 fdata = fp
+-            elif isinstance(fp, _SupportsRead):  # defensive check for untyped callers
+-                fdata = fp.read()
+             elif fp is None:  # defensive check for untyped callers
+                 continue
++            elif hasattr(fp, "read"):
++                fdata = fp.read()
+             else:
+                 fdata = fp
+ 
+@@ -639,7 +639,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
+             else:
+                 if raw_data:
+                     body = self._encode_params(raw_data)
+-                    if isinstance(data, basestring) or isinstance(data, _SupportsRead):
++                    if isinstance(data, (basestring, _SupportsRead)) or hasattr(data, "read"):
+                         content_type = None
+                     else:
+                         content_type = "application/x-www-form-urlencoded"

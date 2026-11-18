@@ -1,0 +1,9 @@
+{
+  "task_id": "fastapi_15588",
+  "resolved": false,
+  "error": null,
+  "exit_code": 1,
+  "patch_chars": 974,
+  "tool_calls": 20,
+  "duration_seconds": 220.37450904000002
+}

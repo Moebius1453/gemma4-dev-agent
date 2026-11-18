@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.log
+*.bak*
+*.tar.gz
+
+# 独立浏览器配置含登录态与缓存，不纳入版本控制
+edge-kaggle-profile/
+cells/
+
+# 构建输出与模型权重不纳入版本控制
+dist/
+adapters/
+*.safetensors
+*.bin
+*.pt
+*.pth

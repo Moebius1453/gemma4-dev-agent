@@ -1,0 +1,48 @@
+diff --git a/reproduce_issue.py b/reproduce_issue.py
+new file mode 100644
+index 00000000..804ef226
+--- /dev/null
++++ b/reproduce_issue.py
+@@ -0,0 +1,29 @@
++import requests
++from requests.models import PreparedRequest
++from requests.adapters import HTTPAdapter
++
++def test_s3_url():
++    url = "https://bucket.s3.amazonaws.com//key_name"
++    print(f"Original URL: {url}")
++    
++    session = requests.Session()
++    adapter = HTTPAdapter()
++    session.mount("https", adapter)
++    
++    # We need to create a PreparedRequest. 
++    # PreparedRequest is usually created by session.prepare_request(request)
++    req = requests.Request("GET", url)
++    prepared = session.prepare_request(req)
++    
++    print(f"PreparedRequest.path_url: {prepared.path_url}")
++    
++    # This is what request_url uses
++    res_url = adapter.request_url(prepared, proxies=None)
++    print(f"request_url result: {res_url}")
++    
++    # The current behavior (with the bug) is that it returns /key_name
++    # The desired behavior is //key_name
++    assert res_url == "//key_name"
++
++if __name__ == "__main__":
++    test_s3_url()
+diff --git a/src/requests/adapters.py b/src/requests/adapters.py
+index 98f74465..27919468 100644
+--- a/src/requests/adapters.py
++++ b/src/requests/adapters.py
+@@ -545,8 +545,6 @@ class HTTPAdapter(BaseAdapter):
+             using_socks_proxy = proxy_scheme.startswith("socks")
+ 
+         url = request.path_url
+-        if url.startswith("//"):  # Don't confuse urllib3
+-            url = f"/{url.lstrip('/')}"
+ 
+         if is_proxied_http_request and not using_socks_proxy:
+             url = urldefragauth(request.url)

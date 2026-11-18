@@ -1,0 +1,29 @@
+diff --git a/reproduce_issue.py b/reproduce_issue.py
+new file mode 100644
+index 00000000..25058334
+--- /dev/null
++++ b/reproduce_issue.py
+@@ -0,0 +1,10 @@
++import requests
++
++# S3 presigned URL with key starting with '/'
++url = "https://bucket.s3.amazonaws.com//key_with_leading_slash.txt"
++print(f"Original URL: {url}")
++try:
++    r = requests.get(url)
++    print(f"Response URL: {r.url}")
++except Exception as e:
++    print(f"Error: {e}")
+diff --git a/src/requests/adapters.py b/src/requests/adapters.py
+index 98f74465..27919468 100644
+--- a/src/requests/adapters.py
++++ b/src/requests/adapters.py
+@@ -545,8 +545,6 @@ class HTTPAdapter(BaseAdapter):
+             using_socks_proxy = proxy_scheme.startswith("socks")
+ 
+         url = request.path_url
+-        if url.startswith("//"):  # Don't confuse urllib3
+-            url = f"/{url.lstrip('/')}"
+ 
+         if is_proxied_http_request and not using_socks_proxy:
+             url = urldefragauth(request.url)

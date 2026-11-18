@@ -1,0 +1,102 @@
+diff --git a/debug_path_url.py b/debug_path_url.py
+new file mode 100644
+index 00000000..69109f54
+--- /dev/null
++++ b/debug_path_url.py
+@@ -0,0 +1,27 @@
++import requests
++from requests.adapters import HTTPAdapter
++from requests.sessions import Session
++import unittest.mock as mock
++
++def test_path_url():
++    session = Session()
++    adapter = HTTPAdapter()
++    session.mount("https://", adapter)
++    
++    urls = [
++        "https://bucket.s3.amazonaws.com//key_name",
++        "https://bucket.s3.amazonaws.com/key_name",
++        "https://bucket.s3.amazonaws.com/key_name?query=1"
++    ]
++    
++    for url in urls:
++        req = requests.Request("GET", url)
++        prepared = session.prepare_request(req)
++        with mock.patch('requests.adapters.select_proxy', return_value=None):
++            res = adapter.request_url(prepared, proxies={})
++            print(f"Original URL: {url}")
++            print(f"Path URL: {res}")
++            print("-" * 20)
++
++if __name__ == "__main__":
++    test_path_url()
+diff --git a/debug_path_url_2.py b/debug_path_url_2.py
+new file mode 100644
+index 00000000..95c2c03a
+--- /dev/null
++++ b/debug_path_url_2.py
+@@ -0,0 +1,23 @@
++import requests
++from requests.adapters import HTTPAdapter
++from requests.sessions import Session
++import unittest.mock as mock
++
++def test_path_url():
++    session = Session()
++    adapter = HTTPAdapter()
++    session.mount("https://", adapter)
++    
++    url = "https://bucket.s3.amazonaws.com//key_name"
++    req = requests.Request("GET", url)
++    prepared = session.prepare_request(req)
++    
++    # Let's see what path_url returns directly
++    print(f"Path URL: {prepared.path_url}")
++    
++    with mock.patch('requests.adapters.select_proxy', return_value=None):
++        res = adapter.request_url(prepared, proxies={})
++        print(f"Request URL: {res}")
++
++if __name__ == "__main__":
++    test_path_url()
+diff --git a/reproduce_issue.py b/reproduce_issue.py
+new file mode 100644
+index 00000000..628ce1cc
+--- /dev/null
++++ b/reproduce_issue.py
+@@ -0,0 +1,21 @@
++import requests
++from requests.adapters import HTTPAdapter
++from requests.sessions import Session
++import unittest.mock as mock
++
++def test_request_url():
++    session = Session()
++    adapter = HTTPAdapter()
++    session.mount("https://", adapter)
++    
++    url = "https://bucket.s3.amazonaws.com//key_with_leading_slash.txt"
++    req = requests.Request("GET", url)
++    prepared = session.prepare_request(req)
++    
++    with mock.patch('requests.adapters.select_proxy', return_value=None):
++        res = adapter.request_url(prepared, proxies={})
++        print(f"URL: {res}")
++        assert res == "//key_with_leading_slash.txt"
++
++if __name__ == "__main__":
++    test_request_url()
+diff --git a/src/requests/adapters.py b/src/requests/adapters.py
+index 98f74465..27919468 100644
+--- a/src/requests/adapters.py
++++ b/src/requests/adapters.py
+@@ -545,8 +545,6 @@ class HTTPAdapter(BaseAdapter):
+             using_socks_proxy = proxy_scheme.startswith("socks")
+ 
+         url = request.path_url
+-        if url.startswith("//"):  # Don't confuse urllib3
+-            url = f"/{url.lstrip('/')}"
+ 
+         if is_proxied_http_request and not using_socks_proxy:
+             url = urldefragauth(request.url)

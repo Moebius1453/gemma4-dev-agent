@@ -1,0 +1,42 @@
+[
+  {
+    "task_id": "fastapi_15589",
+    "repo": "fastapi/fastapi",
+    "resolved": false,
+    "error": "Agent exceeded tool call budget (20 calls)",
+    "exit_code": -1,
+    "patch_chars": 0,
+    "tool_calls": 20,
+    "duration_seconds": 106.51
+  },
+  {
+    "task_id": "requests_7502",
+    "repo": "psf/requests",
+    "resolved": false,
+    "error": null,
+    "exit_code": 1,
+    "patch_chars": 472,
+    "tool_calls": 20,
+    "duration_seconds": 266.25
+  },
+  {
+    "task_id": "requests_7433",
+    "repo": "psf/requests",
+    "resolved": false,
+    "error": null,
+    "exit_code": 1,
+    "patch_chars": 584,
+    "tool_calls": 20,
+    "duration_seconds": 244.58
+  },
+  {
+    "task_id": "requests_7315",
+    "repo": "psf/requests",
+    "resolved": false,
+    "error": "Agent exceeded tool call budget (20 calls)",
+    "exit_code": 1,
+    "patch_chars": 3260,
+    "tool_calls": 20,
+    "duration_seconds": 240.15
+  }
+]
